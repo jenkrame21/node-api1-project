@@ -11,6 +11,7 @@ server.get("/api/users", (req, res) => {
 
     dbFunctions.find()
         .then(users => {
+            // WORKS!
             res.status(200).json(users);
         })
         .catch(() => {
@@ -58,11 +59,10 @@ server.put("/api/users/:id", (req, res) => {
 
     dbFunctions.update(userId, {name, bio})
         .then((userUpdated) => {
-            if (!userId) {
-                // Comes up as null. Incorrect
-                res.status(404).json({ message: "The user with the specified ID does not exist" });
-            } else if (!name || !bio) {
+            if (!name || !bio) {
                 res.status(400).json({ message: "Please provide name and bio for the user" });
+            } else if (!userUpdated) {
+                res.status(404).json({ message: "The user with the specified ID does not exist" });
             } else {
                 res.status(200).json(userUpdated);
             }
@@ -78,7 +78,7 @@ server.delete("/api/users/:id", (req, res) => {
     dbFunctions.remove(userId)
         .then(user => {
             if(user) {
-                res.status(200).json({ message: `User: ${user.name} was deleted.` });
+                res.status(200).json(user);
             } else {
                 res.status(404).json({ message: "The user with the specified ID does not exist" });
             }
